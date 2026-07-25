@@ -164,24 +164,43 @@ void setup() {
   }
   display.clearDisplay();
   display.setTextSize(1);
+  display.println("Oled initialized");
+  delay(1000);
   display.display();
+  display.clearDisplay();
 }
 
-int initialState;
-int selectedState =1;
+int currentPinState;
+int lastPinState =HIGH;
 int stateIndex=0;
 
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 50; 
+
+bool changeDetected= false;
 void loop() {
-  initialState = digitalRead(inputStatePin);
-  if(initialState != selectedState) {
-    // Serial.print("State Changed");
-    stateIndex ++;
-    if(stateIndex > TOTAL_ITEMS-1){
-      stateIndex=0;
-    };
+  currentPinState = digitalRead(inputStatePin);
+  if (lastPinState == HIGH && currentPinState == LOW) {
+    lastDebounceTime = millis();
+    changeDetected= true;
+  }
+
+  if (changeDetected && (millis()-lastDebounceTime) > debounceDelay) {
+
+    if( currentPinState == LOW) {
+      Serial.println("State Changed");
+      stateIndex ++;
+      if(stateIndex > TOTAL_ITEMS-1){
+        stateIndex=0;
+      }
+      drawCenteredMenu(stateIndex);
+      changeDetected = true;
+    }
+    // stateIndex = initialState;
     drawCenteredMenu(stateIndex);
-    return;
-  };
-  stateIndex = initialState;
-  drawCenteredMenu(stateIndex);
+    changeDetected= false;
+    // delay(1000);
+    
+  }
+  lastPinState = currentPinState;
 }

@@ -68,37 +68,7 @@ unsigned long debounceDelay = 100;
 // bool changeDetected= false;
 
 void loop() {
-  // int selectorPinState = digitalRead(selectionPin);
-  // //Selector change loop #######
-  // currentPinState = digitalRead(inputStatePin);
-  // if (lastPinState == HIGH && currentPinState == LOW) {
-  //   lastDebounceTime = millis();
-  //   changeDetected= true;
-  // }
-
-  // if (changeDetected && (millis()-lastDebounceTime) > debounceDelay) {
-
-  //   if( currentPinState == LOW) {
-  //     Serial.println("State Changed");
-  //     stateIndex ++;
-  //     if(stateIndex > TOTAL_ITEMS-1){
-  //       stateIndex=0;
-  //     }
-  //     drawCenteredMenu(stateIndex);
-  //     changeDetected = true;
-  //   }
-  //   drawCenteredMenu(stateIndex);
-  //   changeDetected= false;
-  // }
-  // lastPinState = currentPinState;
-  // // ################################
-
-  // //Select any option
-  // if (selectorPinState == LOW) {
-  //   Serial.print("Selecting Option");
-  //   Serial.println(stateIndex);
-  // }
-
+  
   if (isButtonPressed(inputStatePin, lastPinState, lastDebounceTimeInputPin, debounceDelay)) {
     stateIndex = (stateIndex + 1) % TOTAL_ITEMS;
     drawCenteredMenu(stateIndex);

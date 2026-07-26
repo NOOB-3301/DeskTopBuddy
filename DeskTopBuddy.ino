@@ -8,7 +8,7 @@
 #define OLED_RESET -1
 #define SCREEN_ADDRESS 0x3C
 
-bool isButtonPressed(int pin, int &lastState, unsigned long &lastDebounceTime, unsigned long debounceDelay = 50);
+bool isButtonPressed(int pin, int &lastState, unsigned long &lastDebounceTime, unsigned long debounceDelay);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // --- SYSTEM STATES ---
@@ -34,8 +34,8 @@ const int selectionPin = 3;
 
 // --- SETUP & MAIN LOOP ---
 void setup() {
-  pinMode(inputStatePin, INPUT_PULLUP);
-  pinMode(selectionPin, INPUT_PULLUP);
+  pinMode(inputStatePin, INPUT);
+  pinMode(selectionPin, INPUT);
 
 
   Serial.begin(9600);
@@ -63,12 +63,12 @@ int stateIndex=0;
 
 unsigned long lastDebounceTimeInputPin = 0;  // the last time the input pin was toggled
 unsigned long lastDebounceTimeSelectionPin= 0;
-unsigned long debounceDelay = 100; 
+unsigned long debounceDelay = 10; 
 
 // bool changeDetected= false;
 
 void loop() {
-  
+
   if (isButtonPressed(inputStatePin, lastPinState, lastDebounceTimeInputPin, debounceDelay)) {
     stateIndex = (stateIndex + 1) % TOTAL_ITEMS;
     drawCenteredMenu(stateIndex);
@@ -78,12 +78,34 @@ void loop() {
   if (isButtonPressed(selectionPin, lastSelectionPinState, lastDebounceTimeSelectionPin, debounceDelay)) {
     Serial.print("Selected menu");
     Serial.println(stateIndex);
+    drawMenuItem(stateIndex);
   }
 
 
 }
 
-bool isButtonPressed(int pin, int &lastState, unsigned long &lastDebounceTime, unsigned long debounceDelay = 50) {
+//draw selected menu
+void drawMenuItem(int stateIndex){
+  display.clearDisplay();
+  switch(stateIndex){
+    case 0 :
+      display.println("Rendering sysinfo");
+      break;
+    case 1:
+      display.println("Rendering Timer");
+      break;
+    case 2:
+      display.println("Rendering Weather");
+      break;
+    case 3:
+      display.println("Rendering Music");
+      break;
+  }
+  display.display();
+}
+
+
+bool isButtonPressed(int pin, int &lastState, unsigned long &lastDebounceTime, unsigned long debounceDelay) {
   int currentState = digitalRead(pin);
   bool pressed = false;
 
